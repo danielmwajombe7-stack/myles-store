@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MYLES STORE — Control Room</title>
+<link rel="stylesheet" href="style.css">
+<style>
+    /* Mtindo maalum wa Store Banner kwenye Admin Dashboard */
+    .admin-banner-card {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        border: 2px solid #c5a059;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .admin-banner-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+    .admin-banner-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+        color: #fff;
+        padding: 20px;
+    }
+    .admin-banner-overlay h2 {
+        font-size: 22px;
+        color: #c5a059;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+    .admin-banner-overlay p {
+        font-size: 13px;
+        color: #ddd;
+    }
+</style>
+</head>
+<body data-page="admin">
+<div id="login" class="login"><form id="loginForm" class="login-card"><div class="mini-mark">M</div><label>MYLES STORE · CONTROL ROOM</label><h1>Welcome back.</h1><p>Ingia kusimamia duka lako.</p><input name="username" placeholder="Username" required autocomplete="username"><input name="password" type="password" placeholder="Password" required autocomplete="current-password"><button class="gold-btn wide">SIGN IN ↗</button><small>Demo login: <b>myles</b> / <b>myles123</b></small><a href="index.html">← Rudi kwenye duka</a><p id="loginError" class="error"></p></form></div>
+<div id="app" class="admin-app hidden">
+<aside class="sidebar"><a class="wordmark" href="index.html"><span class="mini-mark">M</span><span><b>MYLES STORE</b><small>CONTROL ROOM</small></span></a><div class="admin-who"><span class="avatar">M</span><span><b>Store Administrator</b><small>OWNER ACCESS</small></span></div>
+<small class="nav-label">MANAGEMENT</small>
+<button class="nav active" data-view="overview">◈ Overview</button><button class="nav" data-view="products">▣ Products</button><button class="nav" data-view="orders">▤ Orders <i id="pendingBadge">0</i></button><button class="nav" data-view="customers">♙ Customers</button><button class="nav" data-view="visitors">◉ Live visitors</button><button class="nav" data-view="transactions">▧ Transactions</button><button class="nav" data-view="promotions">✧ Promotions</button><button class="nav" data-view="inventory">▥ Inventory</button><button class="nav" data-view="reports">▤ Reports</button><button class="nav" data-view="settings">⚙ Settings</button>
+<div class="side-bottom"><a href="index.html">↗ View Store</a><button id="logout">Log out →</button></div></aside>
+<main class="admin-main">
+<header class="admin-header"><div><label id="dateLabel">MYLES STORE / ADMIN</label><h1 id="viewTitle">Overview</h1></div><div class="admin-status"><i></i> LOCAL SYSTEM ACTIVE</div></header>
+
+<!-- Store Banner mpya iliyoongezwa kwenye Admin Dashboard -->
+<div class="admin-banner-card">
+    <img src="image_3bb252.jpg" alt="MYLES STORE Banner" class="admin-banner-img">
+    <div class="admin-banner-overlay">
+        <h2>MYLES STORE DASHBOARD</h2>
+        <p>Usimamizi wa Oda, Bidhaa, Wateja na Miamala</p>
+    </div>
+</div>
+
+<section id="view-overview" class="view">
+<div class="stats"><article><label>SALES CONFIRMED</label><b id="statSales">TSh 0</b><small>Paid orders only</small></article><article><label>PENDING ORDERS</label><b id="statPending">0</b><small>Payment window</small></article><article><label>PRODUCTS</label><b id="statProducts">0</b><small>Listed in the store</small></article><article><label>CUSTOMERS</label><b id="statCustomers">0</b><small>Unique order contacts</small></article><article><label>VISITS RECORDED</label><b id="statVisits">0</b><small>This browser profile</small></article><article><label>LOW STOCK</label><b id="statLow">0</b><small>Five or fewer items</small></article></div>
+<div class="panel"><div class="panel-head"><div><label>LIVE OPERATIONS</label><h2>Recent orders</h2></div><button class="text-btn" data-goto="orders">VIEW ALL →</button></div><div id="recentOrders"></div></div>
+<div class="notice"><b>Important system note</b><p>Huu ni mfumo wa browser/local demo. Ili oda, wageni na picha zionekane kwenye vifaa tofauti, na ili malipo yatambuliwe moja kwa moja kutoka M-Pesa/Tigo Pesa/Airtel Money, utahitaji backend, database na payment API rasmi.</p></div>
+</section>
+<section id="view-products" class="view hidden"><div class="panel"><div class="panel-head"><div><label>CATALOGUE MANAGEMENT</label><h2>Products</h2></div><button id="addProduct" class="gold-btn">+ ADD PRODUCT</button></div><div id="productTable"></div></div></section>
+<section id="view-orders" class="view hidden"><div class="panel"><div class="panel-head"><div><label>ORDER MANAGEMENT</label><h2>Customer orders</h2></div><select id="orderFilter"><option value="all">All orders</option><option value="PENDING">Pending payment</option><option value="PAID">Paid / confirmed</option><option value="EXPIRED">Expired</option><option value="CANCELLED">Cancelled</option><option value="PACKING">Packing</option><option value="SHIPPED">Shipped</option><option value="DELIVERED">Delivered</option></select></div><div id="orderTable"></div></div></section>
+<section id="view-customers" class="view hidden"><div class="panel"><div class="panel-head"><div><label>CRM</label><h2>Customer directory</h2></div></div><div id="customerTable"></div></div></section>
+<section id="view-visitors" class="view hidden"><div class="panel"><div class="panel-head"><div><label>STORE ANALYTICS</label><h2>Browsing activity</h2></div><button id="refreshVisitors" class="outline-btn">REFRESH</button></div><div class="notice">Inaonyesha activity iliyorekodiwa kwenye browser hii pekee. Kwa live visitors wa watu wote, analytics endpoint/server inahitajika.</div><div id="visitorTable"></div></div></section>
+<section id="view-transactions" class="view hidden"><div class="panel"><div class="panel-head"><div><label>PAYMENT RECONCILIATION</label><h2>Transactions</h2></div></div><div id="transactionTable"></div></div></section>
+<section id="view-promotions" class="view hidden"><div class="panel"><div class="panel-head"><div><label>LOYALTY & OFFERS</label><h2>Promotions</h2></div><button id="savePromo" class="gold-btn">SAVE OFFER</button></div><div class="promo-form"><label>Promotion title<input id="promoTitle" placeholder="Mfano: MYLES LOYALTY REWARD"></label><label>Minimum items<input id="promoQty" type="number" min="1" value="10"></label><label>Reward / offer<input id="promoReward" placeholder="Mfano: 10% off next order"></label><label>Promo description<input id="promoDesc" placeholder="Maelezo kwa wateja"></label></div><div id="promoCurrent"></div><div class="notice">Mfumo unaweza kuonyesha ofa hii wakati mteja ana items 10 au zaidi kwenye cart. Auto-discount / coupon redemption itawezeshwa kikamilifu kwenye backend version.</div></div></section>
+<section id="view-inventory" class="view hidden"><div class="panel"><div class="panel-head"><div><label>STOCK CONTROL</label><h2>Inventory overview</h2></div></div><div id="inventoryTable"></div></div></section>
+<section id="view-reports" class="view hidden"><div class="panel"><div class="panel-head"><div><label>BUSINESS INTELLIGENCE</label><h2>Store report</h2></div><button id="exportCsv" class="outline-btn">EXPORT ORDERS CSV ↓</button></div><div id="reportSummary"></div></div></section>
+<section id="view-settings" class="view hidden"><div class="panel"><div class="panel-head"><div><label>STORE CONFIGURATION</label><h2>Settings</h2></div></div><div class="settings-grid"><label>Store name<input value="MYLES STORE" disabled></label><label>Payment pending window<input value="15 minutes" disabled></label><label>Customer care<input value="+255 621 391 680" disabled></label><label>Alternate phone<input value="+255 749 741 680" disabled></label></div><div class="notice">Badili demo credentials ndani ya store.js kabla ya kutumia kwenye kompyuta yako. Usitumie demo login kwenye tovuti ya public.</div><button id="clearDemo" class="danger-btn">CLEAR LOCAL DEMO DATA</button></div></section>
+</main></div>
+<div id="editorShade" class="modal-shade hidden"><div class="modal editor"><button class="x" data-close="editorShade">×</button><label>CATALOGUE EDITOR</label><h2 id="editorTitle">Add product</h2><form id="productForm"><input type="hidden" name="id"><div class="form-grid">
+<label>Product name *<input name="name" required></label><label>SKU / Product code<input name="sku"></label>
+<label>Category *<select name="category" required><option>Nguo za kike</option><option>Nguo za kiume</option><option>Viatu</option><option>Masandali</option><option>Kofia</option><option>Accessories</option></select></label><label>Target / Gender<select name="target"><option>Unisex</option><option>Women</option><option>Men</option><option>Kids</option></select></label>
+<label>Sale price (TSh) *<input name="price" type="number" min="0" required></label><label>Original price (TSh)<input name="oldPrice" type="number" min="0"></label>
+<label>Stock quantity *<input name="stock" type="number" min="0" required></label><label>Sizes<input name="sizes" placeholder="S, M, L, XL"></label>
+<label>Colours<input name="colors" placeholder="Black, White"></label><label>Material<input name="material" placeholder="Cotton, denim..."></label>
+<label class="span2">Description<textarea name="description" rows="3"></textarea></label>
+<label class="span2">Upload product photo *<input id="photoFile" name="photo" type="file" accept="image/*"><small>Chagua picha kutoka kwenye kifaa chako. Hakuna image URL.</small><div id="photoPreview" class="photo-preview">IMAGE PREVIEW</div></label>
+<label>Status<select name="status"><option value="active">Active</option><option value="inactive">Hidden</option></select></label>
+</div><button class="gold-btn wide">SAVE PRODUCT ↗</button></form></div></div>
+<div id="detailShade" class="modal-shade hidden"><div class="modal"><button class="x" data-close="detailShade">×</button><div id="detailBody"></div></div></div>
+<div id="overlayNotice" class="payment-overlay hidden"><div class="payment-card"><button class="x" data-close="overlayNotice">×</button><label>PAYMENT ALERT</label><h2 id="alertTitle">Payment update</h2><p id="alertBody"></p><button class="gold-btn wide" data-close="overlayNotice">GOT IT</button></div></div>
+<div id="toast" class="toast"></div><script src="admin.js"></script></body></html>
