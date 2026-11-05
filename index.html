@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MYLES STORE | Premium Fashion Brand</title>
-   <style>
+    <style>
         :root { --primary: #111; --gold: #c5a059; --cream: #f9f8f6; --gray: #777; --border: #e5e5e5; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: var(--cream); color: var(--primary); line-height: 1.6; }
@@ -68,21 +68,10 @@
     </header>
 
     <div class="container">
-    <div class="store-banner-container">
-        <img src="myles.jpeg" alt="MYLES STORE Storefront" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-    </div>
-
-    <h2 class="section-title">THE <span>COLLECTION</span></h2>
-
-    <div class="product-grid" id="customerProductGrid">
-        <!-- Bidhaa zinazojazwa na Admin -->
-    </div>
-</div>
-    <div class="container">
         <!-- Store Banner iliyo na ulinzi endapo picha haitasomeka -->
         <div class="store-banner-container">
             <div class="banner-fallback-text">MYLES STORE — DAR ES SALAAM</div>
-            <img src="myles" alt="MYLES STORE Storefront" onerror="this.style.display='none';">[cite: 1]
+            <img id="storeBannerImg" src="myles.jpeg" alt="MYLES STORE Storefront" onerror="this.style.display='none';">
         </div>
 
         <h2 class="section-title">THE <span>COLLECTION</span></h2>
@@ -157,7 +146,8 @@
             </form>
         </div>
     </div>
-<script>
+
+    <script>
         const STORE_KEY = 'myles_store_2026';
         const BANNER_KEY = 'myles_store_banner_2026';
         let bag = [];
@@ -167,17 +157,11 @@
             catch(e) { return { products: [], orders: [], transactions: [] }; }
         }
 
-        // Kazi ya kusoma bango lililowekwa na Admin na kuliweka juu
         function loadStoreBanner() {
             let savedBanner = localStorage.getItem(BANNER_KEY);
-            let bannerImg = document.getElementById('storeBannerImg');
-            let fallbackText = document.querySelector('.banner-fallback-text');
-
-            if (savedBanner && bannerImg) {
-                bannerImg.src = savedBanner;
-                if (fallbackText) fallbackText.style.display = 'none';
-            } else if (bannerImg) {
-                bannerImg.src = 'image_3bb252.jpg';
+            let imgEl = document.getElementById('storeBannerImg');
+            if(savedBanner && imgEl) {
+                imgEl.src = savedBanner;
             }
         }
 
@@ -220,7 +204,7 @@
                 list.innerHTML = '<p>Mfuko wako mtupu.</p>';
                 document.getElementById('bagSummary').innerHTML = '';
             } else {
-                // Hapa ndipo palikuwa na hitilafu, sasa imerekebishwa kwa kuweka alama ya * vizuri
+                // Imesahihishwa hitilafu ya kuzidisha bei na idadi (price * qty)
                 list.innerHTML = bag.map(i => `<p>${i.name} × ${i.qty} — TSh ${(i.price * i.qty).toLocaleString()}</p>`).join('');
                 let total = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
                 document.getElementById('bagSummary').innerHTML = `<b>Jumla Kuu: TSh ${total.toLocaleString()}</b>`;
