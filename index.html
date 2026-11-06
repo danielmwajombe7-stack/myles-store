@@ -25,10 +25,10 @@
         .section-title span { color: var(--gold); }
 
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; margin-top: 20px; }
-        .product-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: transform 0.3s; }
+        .product-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: transform 0.3s; display: flex; flex-direction: column; }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .product-card img { width: 100%; height: 280px; object-fit: cover; background: #eee; }
-        .product-info { padding: 15px; }
+        .product-info { padding: 15px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
         .product-info h3 { font-size: 18px; margin-bottom: 5px; }
         .product-info p { color: var(--gold); font-weight: bold; margin-bottom: 15px; }
         .buy-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; }
@@ -144,7 +144,7 @@
         let bag = [];
         let allProducts = [];
 
-        // Kusoma bidhaa zote Real-time kutoka Firebase Cloud Firestore
+        // Kusoma bidhaa zote na picha zake kutoka Firebase Firestore kwa wakati halisi
         onSnapshot(collection(db, "products"), (snapshot) => {
             allProducts = [];
             snapshot.forEach((doc) => {
@@ -161,11 +161,16 @@
             }
             grid.innerHTML = products.map(p => `
                 <div class="product-card">
-                    <img src="${p.image || ''}" alt="${p.name}">
+                    <img src="${p.image || ''}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/260x280?text=MYLES+STORE'">
                     <div class="product-info">
-                        <h3>${p.name}</h3>
-                        <p>TSh ${Number(p.price || 0).toLocaleString('en-US')}</p>
-                        <button class="buy-btn" data-id="${p.id}">Weka kwenye Mfuko</button>
+                        <div>
+                            <h3>${p.name}</h3>
+                            <small style="color:#777;">${p.category || 'General'}</small>
+                        </div>
+                        <div>
+                            <p>TSh ${Number(p.price || 0).toLocaleString('en-US')}</p>
+                            <button class="buy-btn" data-id="${p.id}">Weka kwenye Mfuko</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
