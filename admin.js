@@ -88,7 +88,6 @@ document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => nav(b.da
 function expireOrders() {
     let now = Date.now(), changed = false;
     db.orders.forEach(o => {
-        // Angalia kama ni oda ya kawaida na muda wa dakika 15 umeisha bila malipo kuthibitishwa
         if (o.status === 'PENDING' && now > o.expiresAt && !o.isVipOrder) {
             o.status = 'EXPIRED';
             o.paymentStatus = 'UNPAID';
@@ -249,7 +248,7 @@ function orderDetail(id) {
     if (!o) return;
     let el = $('detailBody');
     if (el) {
-        el.innerHTML = `<label>ORDER DETAILS</label><h2>${o.id}</h2><p>${pill(o.status)} · ${new Date(o.createdAt).toLocaleString()}</p><h3>${esc(o.customer.name)}</h3><p>Phone: ${esc(o.customer.phone)}<br>Alternate: ${esc(o.customer.altPhone || '—')}<br>Address: ${esc([o.customer.region, o.customer.district, o.customer.ward, o.customer.address].filter(Boolean).join(', '))}<br>Notes: ${esc(o.customer.notes || '—')}</p><hr>${o.items.map(i => `<p>${esc(i.name)} × ${i.qty} — ${fmt(i.price * i.qty)}</p>`).join('')}<hr><p>Subtotal: ${fmt(o.subtotal)}<br>Delivery: ${fmt(o.delivery)}<br><b>Total: ${fmt(o.total)}</b></p><p>Payment Method: ${esc(o.payment.method)}<br>Transaction Reference: <b>${esc(o.payment.reference)}</b><br>Payment status: ${esc(o.paymentStatus)}</p>${o.status === 'PENDING' ? `<button class="confirm-btn" data-confirm="${o.id}">VERIFY PAYMENT & CONFIRM</button>` : ''}`;
+        el.innerHTML = `<label>ORDER DETAILS</label><h2>${o.id}</h2><p>${pill(o.status)} · ${new Date(o.createdAt).toLocaleString()}</p><h3>${esc(o.customer.name)}</h3><p>Phone: ${esc(o.customer.phone)}<br>Alternate: ${esc(o.customer.altPhone || '—')}<br>Address: ${esc([o.customer.region, o.customer.district, o.customer.ward, o.customer.address].filter(Boolean).join(', '))}<br>Notes: ${esc(o.customer.notes || '—')}</p><hr>${o.items.map(i => `<p>${esc(i.name)} × ${i.qty} — ${fmt(i.price * i.qty)}</p>`).join('')}<hr><p>Subtotal: ${fmt(o.subtotal)}<br>Delivery: ${fmt(o.delivery)}<br><b>Total: ${fmt(o.total)}</b></p><p>Payment Method: ${esc(o.payment?.method || '')}<br>Transaction Reference: <b>${esc(o.payment?.reference || '')}</b><br>Payment status: ${esc(o.paymentStatus)}</p>${o.status === 'PENDING' ? `<button class="confirm-btn" data-confirm="${o.id}">VERIFY PAYMENT & CONFIRM</button>` : ''}`;
     }
     let shade = $('detailShade');
     if (shade) shade.classList.remove('hidden');
@@ -441,7 +440,7 @@ if (savePromo) {
 let exportCsv = $('exportCsv');
 if (exportCsv) {
     exportCsv.onclick = () => {
-        let rows = [['Order', 'Date', 'Customer', 'Phone', 'Alternate', 'Status', 'Subtotal', 'Delivery', 'Total', 'Payment', 'Reference'], ...db.orders.map(o => [o.id, o.createdAt, o.customer.name, o.customer.phone, o.customer.altPhone, o.status, o.subtotal, o.delivery, o.total, o.payment.method, o.payment.reference])];
+        let rows = [['Order', 'Date', 'Customer', 'Phone', 'Alternate', 'Status', 'Subtotal', 'Delivery', 'Total', 'Payment', 'Reference'], ...db.orders.map(o => [o.id, o.createdAt, o.customer.name, o.customer.phone, o.customer.altPhone, o.status, o.subtotal, o.delivery, o.total, o.payment?.method || '', o.payment?.reference || ''])];
         let csv = rows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
         let a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
