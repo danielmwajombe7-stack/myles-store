@@ -13,20 +13,10 @@
         .bag-btn { background: var(--gold); border: none; color: #fff; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         
-        /* Bango la Juu (Store Banner) */
         .store-banner-container { 
-            width: 100%; 
-            height: 350px; 
-            margin: 20px 0; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            border: 2px solid var(--gold); 
-            background: #111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            width: 100%; height: 350px; margin: 20px 0; border-radius: 8px; overflow: hidden; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 2px solid var(--gold); background: #111;
+            display: flex; align-items: center; justify-content: center; position: relative;
         }
         .store-banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .banner-fallback-text { position: absolute; color: var(--gold); text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 2px; z-index: 1; }
@@ -44,7 +34,6 @@
         .buy-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         .buy-btn:hover { background: var(--gold); }
         
-        /* Modal za Checkout na Bag */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; }
         .modal.active { display: flex; }
         .modal-content { background: #fff; width: 100%; max-width: 550px; padding: 30px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
@@ -68,35 +57,29 @@
     </header>
 
     <div class="container">
-        <!-- Store Banner iliyo na ulinzi endapo picha haitasomeka -->
         <div class="store-banner-container">
             <div class="banner-fallback-text">MYLES STORE — DAR ES SALAAM</div>
             <img id="storeBannerImg" src="myles.jpeg" alt="MYLES STORE Storefront" onerror="this.style.display='none';">
         </div>
 
         <h2 class="section-title">THE <span>COLLECTION</span></h2>
-
         <div class="product-grid" id="customerProductGrid">
-            <!-- Bidhaa zinajazwa hapa na JavaScript -->
+            <p style="grid-column: 1/-1; text-align:center; color:#777;">Inapakia bidhaa kutoka mtandaoni...</p>
         </div>
     </div>
 
-    <!-- Modal ya Mfuko / Shopping Bag & Checkout -->
+    <!-- Modal ya Mfuko / Shopping Bag -->
     <div class="modal" id="bagModal">
         <div class="modal-content">
             <span class="close-modal" id="closeBagModal">&times;</span>
             <h3>Mfuko Wako wa Manunuzi</h3>
-            <div id="bagItemsList">
-                <!-- Bidhaa zilizochaguliwa zinaonekana hapa -->
-            </div>
-            <div id="bagSummary" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
-                <!-- Jumla ya bei -->
-            </div>
+            <div id="bagItemsList"></div>
+            <div id="bagSummary" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;"></div>
             <button class="primary-btn" id="proceedToCheckoutBtn">Endelea na Malipo & Oda</button>
         </div>
     </div>
 
-    <!-- Modal ya Fomu ya Taarifa na Malipo ya Lazima -->
+    <!-- Modal ya Fomu ya Taarifa na Malipo -->
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
             <span class="close-modal" id="closeCheckoutModal">&times;</span>
@@ -114,15 +97,12 @@
                     <label>Mkoa / Wilaya / Eneo</label>
                     <input type="text" name="address" required placeholder="Mfano: Dar es Salaam, Kinondoni">
                 </div>
-                
-                <!-- Chaguo la VIP kwa wateja maalum -->
                 <div class="form-group" style="background: #fff8e1; padding: 10px; border-radius: 4px; border: 1px dashed var(--gold);">
                     <label style="display: flex; align-items: center; cursor: pointer;">
                         <input type="checkbox" name="isVip" style="width: 20px; height: 20px; margin-right: 10px;">
                         <span>Je, wewe ni Mteja wa VIP / Maalum (Muda wa malipo wa saa 48)?</span>
                     </label>
                 </div>
-
                 <div class="form-group" style="margin-top: 15px;">
                     <label>Chagua Njia ya Malipo:</label>
                     <div class="payment-options">
@@ -132,61 +112,72 @@
                         <label class="payment-option-card"><input type="radio" name="paymentMethod" value="Bank"> Benki</label>
                     </div>
                 </div>
-
                 <div style="background: #f4f4f4; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13px;">
-                    <p><strong>Maelekezo:</strong> Tafadhali fanya malipo kwenda Namba ya Duka: <strong>123456 (MYLES STORE)</strong> kabla ya kuwasilisha oda. Oda itafika kwa admin baada ya kuweka namba sahihi ya muamala.</p>
+                    <p><strong>Maelekezo:</strong> Tafadhali fanya malipo kwenda Namba ya Duka: <strong>123456 (MYLES STORE)</strong> kabla ya kuwasilisha oda.</p>
                 </div>
-
                 <div class="form-group">
                     <label>Namba ya Uthibitisho wa Muamala (Transaction ID / Reference)</label>
                     <input type="text" name="transactionRef" required placeholder="Mfano: 8H72K91L">
                 </div>
-
                 <button type="submit" class="primary-btn">Wasilisha Oda kwa Admin</button>
             </form>
         </div>
     </div>
 
-    <script>
-        const STORE_KEY = 'myles_store_2026';
-        const BANNER_KEY = 'myles_store_banner_2026';
+    <!-- Firebase SDK & Real-time Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRfl1eK-Hs4i3vhcEiE2gfAhE6-cKcrGI",
+            authDomain: "myles-store.firebaseapp.com",
+            projectId: "myles-store",
+            storageBucket: "myles-store.firebasestorage.app",
+            messagingSenderId: "685481505770",
+            appId: "1:685481505770:web:d728a7d7cf2471d466f893",
+            measurementId: "G-ZC8RNRNRJZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         let bag = [];
+        let allProducts = [];
 
-        function getDb() {
-            try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { products: [], orders: [], transactions: [] }; }
-            catch(e) { return { products: [], orders: [], transactions: [] }; }
-        }
+        // Kusoma bidhaa zote Real-time kutoka Firebase Cloud Firestore
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            allProducts = [];
+            snapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, ...doc.data() });
+            });
+            renderStoreProducts(allProducts);
+        });
 
-        function loadStoreBanner() {
-            let savedBanner = localStorage.getItem(BANNER_KEY);
-            let imgEl = document.getElementById('storeBannerImg');
-            if(savedBanner && imgEl) {
-                imgEl.src = savedBanner;
-            }
-        }
-
-        function renderStoreProducts() {
-            let db = getDb();
+        function renderStoreProducts(products) {
             let grid = document.getElementById('customerProductGrid');
-            if(!db.products.length) {
+            if(!products.length) {
                 grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#777;">Hakuna bidhaa zilizowekwa bado na Admin.</p>';
                 return;
             }
-            grid.innerHTML = db.products.map(p => `
+            grid.innerHTML = products.map(p => `
                 <div class="product-card">
                     <img src="${p.image || ''}" alt="${p.name}">
                     <div class="product-info">
                         <h3>${p.name}</h3>
-                        <p>TSh ${Number(p.price).toLocaleString('en-US')}</p>
-                        <button class="buy-btn" onclick="addToBag('${p.id}')">Weka kwenye Mfuko</button>
+                        <p>TSh ${Number(p.price || 0).toLocaleString('en-US')}</p>
+                        <button class="buy-btn" data-id="${p.id}">Weka kwenye Mfuko</button>
                     </div>
                 </div>
             `).join('');
+
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.onclick = (e) => addToBag(e.target.dataset.id);
+            });
         }
 
-        function addToBag(id) {
-            let db = getDb();
-            let product = db.products.find(x => x.id === id);
+        window.addToBag = function(id) {
+            let product = allProducts.find(x => x.id === id);
             if(!product) return;
             let item = bag.find(x => x.id === id);
             if(item) {
@@ -196,7 +187,7 @@
             }
             document.getElementById('bagCount').textContent = bag.reduce((a,b)=>a+b.qty, 0);
             alert('Bidhaa imeongezwa kwenye mfuko!');
-        }
+        };
 
         document.getElementById('openBagBtn').onclick = () => {
             let list = document.getElementById('bagItemsList');
@@ -204,7 +195,6 @@
                 list.innerHTML = '<p>Mfuko wako mtupu.</p>';
                 document.getElementById('bagSummary').innerHTML = '';
             } else {
-                // Imesahihishwa hitilafu ya kuzidisha bei na idadi (price * qty)
                 list.innerHTML = bag.map(i => `<p>${i.name} × ${i.qty} — TSh ${(i.price * i.qty).toLocaleString()}</p>`).join('');
                 let total = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
                 document.getElementById('bagSummary').innerHTML = `<b>Jumla Kuu: TSh ${total.toLocaleString()}</b>`;
@@ -216,74 +206,38 @@
         document.getElementById('closeCheckoutModal').onclick = () => document.getElementById('checkoutModal').classList.remove('active');
 
         document.getElementById('proceedToCheckoutBtn').onclick = () => {
-            if(!bag.length) {
-                alert('Tafadhali chagua bidhaa kwanza.');
-                return;
-            }
+            if(!bag.length) { alert('Tafadhali chagua bidhaa kwanza.'); return; }
             document.getElementById('bagModal').classList.remove('active');
             document.getElementById('checkoutModal').classList.add('active');
         };
 
-        document.getElementById('strictCheckoutForm').onsubmit = (e) => {
+        // Kutuma Oda Moja kwa Moja kwenye Cloud Database
+        document.getElementById('strictCheckoutForm').onsubmit = async (e) => {
             e.preventDefault();
             let f = new FormData(e.target);
             let subtotal = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
-            let orderId = 'ORD' + Date.now();
             let isVip = f.get('isVip') === 'on';
 
-            let expiresAt = isVip ? Date.now() + (48 * 3600 * 1000) : Date.now() + (15 * 60 * 1000);
-
             let orderData = {
-                id: orderId,
-                customer: {
-                    name: f.get('name'),
-                    phone: f.get('phone'),
-                    address: f.get('address')
-                },
+                customer: { name: f.get('name'), phone: f.get('phone'), address: f.get('address') },
                 items: bag,
-                subtotal: subtotal,
-                delivery: 0,
                 total: subtotal,
-                payment: {
-                    method: f.get('paymentMethod'),
-                    reference: f.get('transactionRef')
-                },
-                paymentStatus: 'PENDING VERIFICATION',
+                payment: { method: f.get('paymentMethod'), reference: f.get('transactionRef') },
                 status: 'PENDING',
                 isVipOrder: isVip,
-                createdAt: new Date().toISOString(),
-                expiresAt: expiresAt
+                createdAt: new Date().toISOString()
             };
 
-            let db = getDb();
-            db.orders.unshift(orderData);
-            db.transactions.push({
-                id: 'TXN' + Date.now(),
-                orderId: orderId,
-                method: f.get('paymentMethod'),
-                reference: f.get('transactionRef'),
-                amount: subtotal,
-                status: 'PENDING',
-                createdAt: new Date().toISOString()
-            });
-
-            bag.forEach(item => {
-                let p = db.products.find(x => x.id === item.id);
-                if(p) p.stock = Math.max(0, p.stock - item.qty);
-            });
-
-            localStorage.setItem(STORE_KEY, JSON.stringify(db));
-            alert('Oda yako imetumwa mafanikio kwa Admin na inasubiri uhakiki wa muamala wako!');
-            bag = [];
-            document.getElementById('bagCount').textContent = '0';
-            document.getElementById('checkoutModal').classList.remove('active');
-            location.reload();
-        };
-
-        // Kusoma bango na bidhaa kwa pamoja ukurasa unapofunguka
-        window.onload = () => {
-            loadStoreBanner();
-            renderStoreProducts();
+            try {
+                await addDoc(collection(db, "orders"), orderData);
+                alert('Oda yako imetumwa kwa kikamilifu na inasubiri uhakiki wa MYLES store officer!');
+                bag = [];
+                document.getElementById('bagCount').textContent = '0';
+                document.getElementById('checkoutModal').classList.remove('active');
+            } catch(err) {
+                console.error(err);
+                alert('Imeshindikana kutuma oda, tafadhali jaribu tena.');
+            }
         };
     </script>
 </body>
