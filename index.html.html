@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYLES STORE | Premium Fashion Brand</title>
+    <style>
+        :root { --primary: #111; --gold: #c5a059; --cream: #f9f8f6; --gray: #777; --border: #e5e5e5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--cream); color: var(--primary); line-height: 1.6; }
+        header { background: var(--primary); color: #fff; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); }
+        header h1 { letter-spacing: 2px; font-size: 24px; color: var(--gold); }
+        .bag-btn { background: var(--gold); border: none; color: #fff; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        
+        .store-banner-container { 
+            width: 100%; height: 350px; margin: 20px 0; border-radius: 8px; overflow: hidden; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 2px solid var(--gold); background: #111;
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .store-banner-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .banner-fallback-text { position: absolute; color: var(--gold); text-align: center; font-size: 28px; font-weight: bold; letter-spacing: 2px; z-index: 1; }
+
+        .section-title { text-align: center; margin: 40px 0 20px 0; font-size: 28px; letter-spacing: 1px; color: var(--primary); }
+        .section-title span { color: var(--gold); }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; margin-top: 20px; }
+        .product-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .product-card img { width: 100%; height: 280px; object-fit: cover; background: #eee; }
+        .product-info { padding: 15px; }
+        .product-info h3 { font-size: 18px; margin-bottom: 5px; }
+        .product-info p { color: var(--gold); font-weight: bold; margin-bottom: 15px; }
+        .buy-btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .buy-btn:hover { background: var(--gold); }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; }
+        .modal.active { display: flex; }
+        .modal-content { background: #fff; width: 100%; max-width: 550px; padding: 30px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
+        .modal-content h3 { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+        .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .payment-option-card { border: 1px solid var(--border); padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: 600; }
+        .payment-option-card input { margin-right: 8px; }
+        .primary-btn { width: 100%; background: var(--gold); color: #fff; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .close-modal { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--gray); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MYLES STORE</h1>
+        <button class="bag-btn" id="openBagBtn">Mfuko (Bag) <span id="bagCount">0</span></button>
+    </header>
+
+    <div class="container">
+        <div class="store-banner-container">
+            <div class="banner-fallback-text">MYLES STORE — DAR ES SALAAM</div>
+            <img id="storeBannerImg" src="myles.jpeg" alt="MYLES STORE Storefront" onerror="this.style.display='none';">
+        </div>
+
+        <h2 class="section-title">THE <span>COLLECTION</span></h2>
+        <div class="product-grid" id="customerProductGrid">
+            <p style="grid-column: 1/-1; text-align:center; color:#777;">Inapakia bidhaa kutoka mtandaoni...</p>
+        </div>
+    </div>
+
+    <!-- Modal Bag -->
+    <div class="modal" id="bagModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeBagModal">&times;</span>
+            <h3>Mfuko Wako wa Manunuzi</h3>
+            <div id="bagItemsList"></div>
+            <div id="bagSummary" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;"></div>
+            <button class="primary-btn" id="proceedToCheckoutBtn">Endelea na Malipo & Oda</button>
+        </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeCheckoutModal">&times;</span>
+            <h3>Taarifa za Mteja na Malipo ya Lazima</h3>
+            <form id="strictCheckoutForm">
+                <div class="form-group">
+                    <label>Jina Kamili</label>
+                    <input type="text" name="name" required placeholder="Andika jina lako kamili">
+                </div>
+                <div class="form-group">
+                    <label>Namba ya Simu</label>
+                    <input type="tel" name="phone" required placeholder="Mfano: 0712345678">
+                </div>
+                <div class="form-group">
+                    <label>Mkoa / Wilaya / Eneo</label>
+                    <input type="text" name="address" required placeholder="Mfano: Dar es Salaam, Kinondoni">
+                </div>
+                <div class="form-group" style="background: #fff8e1; padding: 10px; border-radius: 4px; border: 1px dashed var(--gold);">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="isVip" style="width: 20px; height: 20px; margin-right: 10px;">
+                        <span>Je, wewe ni Mteja wa VIP / Maalum (Muda wa malipo wa saa 48)?</span>
+                    </label>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Chagua Njia ya Malipo:</label>
+                    <div class="payment-options">
+                        <label class="payment-option-card"><input type="radio" name="paymentMethod" value="Mixx by Yas" required> Mixx by Yas</label>
+                        <label class="payment-option-card"><input type="radio" name="paymentMethod" value="Voda M-Pesa"> Voda M-Pesa</label>
+                        <label class="payment-option-card"><input type="radio" name="paymentMethod" value="Halopesa"> Halopesa</label>
+                        <label class="payment-option-card"><input type="radio" name="paymentMethod" value="Bank"> Benki</label>
+                    </div>
+                </div>
+                <div style="background: #f4f4f4; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 13px;">
+                    <p><strong>Maelekezo:</strong> Tafadhali fanya malipo kwenda Namba ya Duka: <strong>123456 (MYLES STORE)</strong> kabla ya kuwasilisha oda.</p>
+                </div>
+                <div class="form-group">
+                    <label>Namba ya Uthibitisho wa Muamala (Transaction ID / Reference)</label>
+                    <input type="text" name="transactionRef" required placeholder="Mfano: 8H72K91L">
+                </div>
+                <button type="submit" class="primary-btn">Wasilisha Oda kwa Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (v13 Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRfl1eK-Hs4i3vhcEiE2gfAhE6-cKcrGI",
+            authDomain: "myles-store.firebaseapp.com",
+            projectId: "myles-store",
+            storageBucket: "myles-store.firebasestorage.app",
+            messagingSenderId: "685481505770",
+            appId: "1:685481505770:web:d728a7d7cf2471d466f893",
+            measurementId: "G-ZC8RNRNRJZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let bag = [];
+        let allProducts = [];
+
+        // Kusoma bidhaa kutoka Firestore Cloud Database kwa wakati halisi (Real-time)
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            allProducts = [];
+            snapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, ...doc.data() });
+            });
+            renderStoreProducts(allProducts);
+        });
+
+        function renderStoreProducts(products) {
+            let grid = document.getElementById('customerProductGrid');
+            if(!products.length) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#777;">Hakuna bidhaa zilizowekwa bado na Admin.</p>';
+                return;
+            }
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${p.image || ''}" alt="${p.name}">
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p>TSh ${Number(p.price).toLocaleString('en-US')}</p>
+                        <button class="buy-btn" data-id="${p.id}">Weka kwenye Mfuko</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.onclick = (e) => addToBag(e.target.dataset.id);
+            });
+        }
+
+        function addToBag(id) {
+            let product = allProducts.find(x => x.id === id);
+            if(!product) return;
+            let item = bag.find(x => x.id === id);
+            if(item) {
+                item.qty++;
+            } else {
+                bag.push({ ...product, qty: 1 });
+            }
+            document.getElementById('bagCount').textContent = bag.reduce((a,b)=>a+b.qty, 0);
+            alert('Bidhaa imeongezwa kwenye mfuko!');
+        }
+
+        document.getElementById('openBagBtn').onclick = () => {
+            let list = document.getElementById('bagItemsList');
+            if(!bag.length) {
+                list.innerHTML = '<p>Mfuko wako mtupu.</p>';
+                document.getElementById('bagSummary').innerHTML = '';
+            } else {
+                list.innerHTML = bag.map(i => `<p>${i.name} × ${i.qty} — TSh ${(i.price * i.qty).toLocaleString()}</p>`).join('');
+                let total = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
+                document.getElementById('bagSummary').innerHTML = `<b>Jumla Kuu: TSh ${total.toLocaleString()}</b>`;
+            }
+            document.getElementById('bagModal').classList.add('active');
+        };
+
+        document.getElementById('closeBagModal').onclick = () => document.getElementById('bagModal').classList.remove('active');
+        document.getElementById('closeCheckoutModal').onclick = () => document.getElementById('checkoutModal').classList.remove('active');
+
+        document.getElementById('proceedToCheckoutBtn').onclick = () => {
+            if(!bag.length) { alert('Tafadhali chagua bidhaa kwanza.'); return; }
+            document.getElementById('bagModal').classList.remove('active');
+            document.getElementById('checkoutModal').classList.add('active');
+        };
+
+        // Kutuma Oda Moja kwa Moja kwenye Firestore Cloud
+        document.getElementById('strictCheckoutForm').onsubmit = async (e) => {
+            e.preventDefault();
+            let f = new FormData(e.target);
+            let subtotal = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
+            let isVip = f.get('isVip') === 'on';
+
+            let orderData = {
+                customer: { name: f.get('name'), phone: f.get('phone'), address: f.get('address') },
+                items: bag,
+                total: subtotal,
+                payment: { method: f.get('paymentMethod'), reference: f.get('transactionRef') },
+                status: 'PENDING',
+                isVipOrder: isVip,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, "orders"), orderData);
+                alert('Oda yako imetumwa kwa mafanikio na inasubiri uhakiki wa Admin!');
+                bag = [];
+                document.getElementById('bagCount').textContent = '0';
+                document.getElementById('checkoutModal').classList.remove('active');
+            } catch(err) {
+                console.error(err);
+                alert('Imeshindikana kutuma oda, tafadhali jaribu tena.');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYLES STORE | Admin Panel</title>
+    <style>
+        :root { --primary: #111; --gold: #c5a059; --cream: #f9f8f6; --gray: #777; --border: #e5e5e5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f4f6f9; color: var(--primary); padding: 20px; }
+        header { background: var(--primary); color: #fff; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--gold); border-radius: 6px; margin-bottom: 25px; }
+        header h1 { font-size: 22px; color: var(--gold); letter-spacing: 1px; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; max-width: 1300px; margin: 0 auto; }
+        .card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .card h2 { margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid var(--cream); padding-bottom: 8px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+        .btn-submit { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .btn-submit:hover { background: var(--gold); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; font-size: 13px; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .btn-danger { background: #d9534f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .vip-tag { background: var(--gold); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MYLES STORE — ADMIN DASHBOARD</h1>
+        <span>Cloud Database Connected</span>
+    </header>
+
+    <div class="grid-layout">
+        <!-- Form ya Ongeza Bidhaa -->
+        <div class="card">
+            <h2>Ongeza Bidhaa Mpya</h2>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label>Jina la Bidhaa</label>
+                    <input type="text" id="prodName" required placeholder="Mfano: Myles Official Suit">
+                </div>
+                <div class="form-group">
+                    <label>Bei (TSh)</label>
+                    <input type="number" id="prodPrice" required placeholder="Mfano: 150000">
+                </div>
+                <div class="form-group">
+                    <label>URL ya Picha (Image Link)</label>
+                    <input type="url" id="prodImage" required placeholder="https://...">
+                </div>
+                <button type="submit" class="btn-submit">Hifadhi Bidhaa Mtandaoni</button>
+            </form>
+        </div>
+
+        <!-- Orodha ya Bidhaa na Oda -->
+        <div>
+            <!-- Tab ya Oda za Wateja -->
+            <div class="card" style="margin-bottom: 25px;">
+                <h2>Oda Zilizowasilishwa na Wateja (Real-time)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mteja</th>
+                            <th>Namba ya Simu</th>
+                            <th>Mkoa</th>
+                            <th>Njia ya Malipo</th>
+                            <th>Kumbukumbu ya Malipo</th>
+                            <th>Jumla (TSh)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersTable">
+                        <tr><td colspan="6" style="text-align:center;">Inapakia oda...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tab ya Orodha ya Bidhaa zilizopo -->
+            <div class="card">
+                <h2>Orodha ya Bidhaa Dukan</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Picha</th>
+                            <th>Jina</th>
+                            <th>Bei (TSh)</th>
+                            <th>Kitendo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminProductsTable">
+                        <tr><td colspan="4" style="text-align:center;">Inapakia bidhaa...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (v13 Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRfl1eK-Hs4i3vhcEiE2gfAhE6-cKcrGI",
+            authDomain: "myles-store.firebaseapp.com",
+            projectId: "myles-store",
+            storageBucket: "myles-store.firebasestorage.app",
+            messagingSenderId: "685481505770",
+            appId: "1:685481505770:web:d728a7d7cf2471d466f893",
+            measurementId: "G-ZC8RNRNRJZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. Kuongeza Bidhaa Mpya kwenye Database ya Firebase
+        document.getElementById('addProductForm').onsubmit = async (e) => {
+            e.preventDefault();
+            let name = document.getElementById('prodName').value;
+            let price = Number(document.getElementById('prodPrice').value);
+            let image = document.getElementById('prodImage').value;
+
+            try {
+                await addDoc(collection(db, "products"), {
+                    name: name,
+                    price: price,
+                    image: image,
+                    createdAt: new Date().toISOString()
+                });
+                alert('Bidhaa imeongezwa na sasa inaonekana kwenye simu za wateja!');
+                document.getElementById('addProductForm').reset();
+            } catch(err) {
+                console.error(err);
+                alert('Imeshindikana kuongeza bidhaa.');
+            }
+        };
+
+        // 2. Kusoma Bidhaa zote Real-time
+        onSnapshot(collection(db, "products"), (snapshot) => {
+            let table = document.getElementById('adminProductsTable');
+            let products = [];
+            snapshot.forEach((d) => products.push({ id: d.id, ...d.data() }));
+
+            if(!products.length) {
+                table.innerHTML = '<tr><td colspan="4" style="text-align:center;">Hakuna bidhaa bado.</td></tr>';
+                return;
+            }
+
+            table.innerHTML = products.map(p => `
+                <tr>
+                    <td><img src="${p.image}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"></td>
+                    <td><b>${p.name}</b></td>
+                    <td>TSh ${Number(p.price).toLocaleString()}</td>
+                    <td><button class="btn-danger" data-id="${p.id}">Futa</button></td>
+                </tr>
+            `).join('');
+
+            document.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.onclick = async (e) => {
+                    let id = e.target.dataset.id;
+                    if(confirm('Je, una uhakika unataka kufuta bidhaa hii?')) {
+                        await deleteDoc(doc(db, "products", id));
+                    }
+                };
+            });
+        });
+
+        // 3. Kusoma Oda za Wateja Real-time
+        onSnapshot(collection(db, "orders"), (snapshot) => {
+            let table = document.getElementById('adminOrdersTable');
+            let orders = [];
+            snapshot.forEach((d) => orders.push({ id: d.id, ...d.data() }));
+
+            if(!orders.length) {
+                table.innerHTML = '<tr><td colspan="6" style="text-align:center;">Hakuna oda zilizowasilishwa bado.</td></tr>';
+                return;
+            }
+
+            table.innerHTML = orders.map(o => `
+                <tr>
+                    <td><b>${o.customer.name}</b> ${o.isVipOrder ? '<span class="vip-tag">VIP</span>' : ''}</td>
+                    <td>${o.customer.phone}</td>
+                    <td>${o.customer.address}</td>
+                    <td><span class="status-badge status-pending">${o.payment.method}</span></td>
+                    <td><code>${o.payment.reference}</code></td>
+                    <td><b>TSh ${Number(o.total).toLocaleString()}</b></td>
+                </tr>
+            `).join('');
+        });
+    </script>
+</body>
+</html>
