@@ -42,11 +42,10 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
         .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .payment-option-card { border: 1px solid var(--border); padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: 600; }
+        .payment-option-card { border: 1px solid var(--border); padding: 12px; border-radius: 4px; cursor: pointer; text-align: center; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; }
         .payment-option-card input { margin-right: 8px; }
         .primary-btn { width: 100%; background: var(--gold); color: #fff; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
         .close-modal { float: right; cursor: pointer; font-size: 20px; font-weight: bold; color: var(--gray); }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -191,52 +190,73 @@
 
         document.getElementById('openBagBtn').onclick = () => {
             let list = document.getElementById('bagItemsList');
+            let modal = document.getElementById('bagModal');
+            modal.classList.add('active');
+
             if(!bag.length) {
                 list.innerHTML = '<p>Mfuko wako mtupu.</p>';
                 document.getElementById('bagSummary').innerHTML = '';
-            } else {
-                list.innerHTML = bag.map(i => `<p>${i.name} × ${i.qty} — TSh ${(i.price * i.qty).toLocaleString()}</p>`).join('');
-                let total = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
-                document.getElementById('bagSummary').innerHTML = `<b>Jumla Kuu: TSh ${total.toLocaleString()}</b>`;
+                return;
             }
-            document.getElementById('bagModal').classList.add('active');
+
+            let total = bag.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            list.innerHTML = bag.map(i => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                    <span>${i.name} (×${i.qty})</span>
+                    <span>TSh ${(i.price * i.qty).toLocaleString('en-US')}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('bagSummary').innerHTML = `
+                <strong>Jumla Kuu: TSh ${total.toLocaleString('en-US')}</strong>
+            `;
         };
 
-        document.getElementById('closeBagModal').onclick = () => document.getElementById('bagModal').classList.remove('active');
-        document.getElementById('closeCheckoutModal').onclick = () => document.getElementById('checkoutModal').classList.remove('active');
+        document.getElementById('closeBagModal').onclick = () => {
+            document.getElementById('bagModal').classList.remove('active');
+        };
 
         document.getElementById('proceedToCheckoutBtn').onclick = () => {
-            if(!bag.length) { alert('Tafadhali chagua bidhaa kwanza.'); return; }
+            if(!bag.length) return alert('Mfuko wako mtupu.');
             document.getElementById('bagModal').classList.remove('active');
             document.getElementById('checkoutModal').classList.add('active');
         };
 
-        // Kutuma Oda Moja kwa Moja kwenye Cloud Database
+        document.getElementById('closeCheckoutModal').onclick = () => {
+            document.getElementById('checkoutModal').classList.remove('active');
+        };
+
+        // Kutuma Oda kwenda Firebase
         document.getElementById('strictCheckoutForm').onsubmit = async (e) => {
             e.preventDefault();
-            let f = new FormData(e.target);
-            let subtotal = bag.reduce((a,b)=>a+(b.price*b.qty), 0);
-            let isVip = f.get('isVip') === 'on';
-
+            let formData = new FormData(e.target);
+            
             let orderData = {
-                customer: { name: f.get('name'), phone: f.get('phone'), address: f.get('address') },
+                customer: {
+                    name: formData.get('name'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address')
+                },
                 items: bag,
-                total: subtotal,
-                payment: { method: f.get('paymentMethod'), reference: f.get('transactionRef') },
+                total: bag.reduce((sum, i) => sum + (i.price * i.qty), 0),
+                isVipOrder: formData.get('isVip') === 'on',
+                paymentMethod: formData.get('paymentMethod'),
+                transactionRef: formData.get('transactionRef'),
                 status: 'PENDING',
-                isVipOrder: isVip,
+                paymentStatus: 'UNVERIFIED',
                 createdAt: new Date().toISOString()
             };
 
             try {
                 await addDoc(collection(db, "orders"), orderData);
-                alert('Oda yako imetumwa kwa kikamilifu na inasubiri uhakiki wa MYLES store officer!');
+                alert('Oda yako imewasilishwa kikamilifu! Admin ataithibitisha hivi punde.');
                 bag = [];
                 document.getElementById('bagCount').textContent = '0';
                 document.getElementById('checkoutModal').classList.remove('active');
-            } catch(err) {
+                e.target.reset();
+            } catch (err) {
                 console.error(err);
-                alert('Imeshindikana kutuma oda, tafadhali jaribu tena.');
+                alert('Kulikuja na hitilafu wakati wa kutuma oda.');
             }
         };
     </script>
