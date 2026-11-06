@@ -144,11 +144,22 @@
         let bag = [];
         let allProducts = [];
 
-        // Kusoma bidhaa zote na picha zake kutoka Firebase Firestore kwa wakati halisi
+        // Kusoma bidhaa zote kutoka kwenye collection ya "products"
         onSnapshot(collection(db, "products"), (snapshot) => {
             allProducts = [];
+            snapshot.fEach ? snapshot.forEach(d => {}) : null; // Safe fallback
             snapshot.forEach((doc) => {
-                allProducts.push({ id: doc.id, ...doc.data() });
+                let data = doc.data();
+                // Kuchukua picha bila kujali kama imehifadhiwa kwenye 'image' au 'name'
+                let imgSource = data.image || data.name || '';
+                
+                allProducts.push({ 
+                    id: doc.id, 
+                    name: data.productName || data.name || 'Bidhaa ya Myles',
+                    price: data.price || 0,
+                    category: data.category || 'General',
+                    image: imgSource 
+                });
             });
             renderStoreProducts(allProducts);
         });
@@ -161,14 +172,14 @@
             }
             grid.innerHTML = products.map(p => `
                 <div class="product-card">
-                    <img src="${p.image || ''}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/260x280?text=MYLES+STORE'">
+                    <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/260x280?text=MYLES+STORE'">
                     <div class="product-info">
                         <div>
                             <h3>${p.name}</h3>
-                            <small style="color:#777;">${p.category || 'General'}</small>
+                            <small style="color:#777;">${p.category}</small>
                         </div>
                         <div>
-                            <p>TSh ${Number(p.price || 0).toLocaleString('en-US')}</p>
+                            <p>TSh ${Number(p.price).toLocaleString('en-US')}</p>
                             <button class="buy-btn" data-id="${p.id}">Weka kwenye Mfuko</button>
                         </div>
                     </div>
